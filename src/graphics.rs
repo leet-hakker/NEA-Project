@@ -2,6 +2,7 @@ use winit::{
     event::*,
     event_loop::{ControlFlow, EventLoop},
     window::{WindowBuilder, Window},
+    dpi::LogicalSize,
 };
 use wgpu::util::DeviceExt;
 
@@ -9,8 +10,6 @@ struct State {
     surface: wgpu::Surface,
     device: wgpu::Device,
     queue: wgpu::Queue,
-    config: wgpu::SurfaceConfiguration,
-    size: winit::dpi::PhysicalSize<u32>,
     render_pipeline: wgpu::RenderPipeline,
     vertex_buffer: wgpu::Buffer,
     index_buffer: wgpu::Buffer,
@@ -18,7 +17,6 @@ struct State {
 }
 
 impl State {
-    // Creating some of the wgpu types requires async code
     async fn new(window: &Window) -> Self {
         let size = window.inner_size();
 
@@ -106,55 +104,21 @@ impl State {
                         },
                         multiview: None,
         });
-/*
-        let vertex_buffer = device.create_buffer_init(
-            &wgpu::util::BufferInitDescriptor {
-                label: Some("Vertex Buffer"),
-                contents: bytemuck::cast_slice(VERTICES),
-                usage: wgpu::BufferUsages::VERTEX,
-            }
-        );
 
-        let index_buffer = device.create_buffer_init(
-            &wgpu::util::BufferInitDescriptor {
-                label: Some("Index Buffer"),
-                contents: bytemuck::cast_slice(INDICES),
-                usage: wgpu::BufferUsages::INDEX,
-            }
-        );
-        let num_indices = INDICES.len() as u32;
-*/
 
-        let num_vertices = 48;
-        let angle = std::f32::consts::PI * 2.0 / num_vertices as f32;
-        let challenge_verts = (0..num_vertices)
-            .map(|i| {
-                 let theta = angle * i as f32;
-                 let radius = 100.0;
-                 Vertex {
-                    position: [0.5 * theta.cos(), -0.5 * theta.sin(), 0.0],
-                    color: [(1.0 + theta.cos())/2.0, (1.0 + theta.sin())/2.0, 1.0],
-                 }
-            })
-            .collect::<Vec<_>>();
 
-        let num_triangles = num_vertices - 2;
-        let challenge_indices = (1u16..num_triangles + 1)
-            .into_iter()
-            .flat_map(|i| vec![i + 1, i, 0])
-            .collect::<Vec<_>>();
-        let num_indices = challenge_indices.len() as u32;
+        let (verts, indices, num_indices) = generate_circle(48, 540, (0, 0), size);
 
         let vertex_buffer = 
             device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: Some("Challenge Vertex Buffer"),
-                contents: bytemuck::cast_slice(&challenge_verts),
+                contents: bytemuck::cast_slice(&verts),
                 usage: wgpu::BufferUsages::VERTEX,
             });
         let index_buffer = 
             device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: Some("Challenge Index Buffer"),
-                contents: bytemuck::cast_slice(&challenge_indices),
+                contents: bytemuck::cast_slice(&indices),
                 usage: wgpu::BufferUsages::INDEX,
             });
 
@@ -163,23 +127,12 @@ impl State {
             surface,
             device,
             queue,
-            config,
-            size,
             render_pipeline,
             vertex_buffer,
             index_buffer,
             num_indices,
         }
 
-    }
-
-    fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {
-        if new_size.width > 0 && new_size.height > 0 {
-            self.size = new_size;
-            self.config.width = new_size.width;
-            self.config.height = new_size.height;
-            self.surface.configure(&self.device, &self.config);
-        }
     }
 
     fn input(&mut self, event: &WindowEvent) -> bool {
@@ -231,6 +184,29 @@ impl State {
 }
 
 
+fn generate_circle(num_vertices: u16, radius: u16, centre: (u16, u16), size: winit::dpi::PhysicalSize<u32>) -> (Vec<Vertex>, Vec<u16>, u32) {
+    let angle = std::f32::consts::PI * 2.0 / num_vertices as f32;
+    let verts = (0..num_vertices)
+        .map(|i| {
+            let theta = angle * i as f32;
+            Vertex {
+                position: [(radius as f32)*2.0 / size.width as f32 * theta.cos() + centre.0 as f32 / size.width as f32, -(radius as f32)*2.0 / size.height as f32 * theta.sin() + centre.1 as f32 / size.height as f32, 0.0],
+                color: [(1.0 + theta.cos())/2.0, (1.0 + theta.sin())/2.0, 1.0],
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let num_triangles = num_vertices - 2;
+    let indices = (1u16..num_triangles + 1)
+        .into_iter()
+        .flat_map(|i| vec![i + 1, i, 0])
+        .collect::<Vec<_>>();
+    let num_indices = indices.len() as u32;
+
+    return (verts, indices, num_indices);
+
+}
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 struct Vertex {
@@ -260,25 +236,10 @@ impl Vertex {
     }
 }
 
-const VERTICES: &[Vertex] = &[
-    Vertex { position: [-0.0868241, 0.49240386, 0.0], color: [0.5, 0.0, 0.5] }, // A
-    Vertex { position: [-0.49513406, 0.06958647, 0.0], color: [0.5, 0.0, 0.5] }, // B
-    Vertex { position: [-0.21918549, -0.44939706, 0.0], color: [0.5, 0.0, 0.5] }, // C
-    Vertex { position: [0.35966998, -0.3473291, 0.0], color: [0.5, 0.0, 0.5] }, // D
-    Vertex { position: [0.44147372, 0.2347359, 0.0], color: [0.5, 0.0, 0.5] }, // E
-];
-
-const INDICES: &[u16] = &[
-    0, 1, 4,
-    1, 2, 4,
-    2, 3, 4,
-];
-
-
 fn main() {
     env_logger::init();
     let event_loop = EventLoop::new();
-    let window = WindowBuilder::new().build(&event_loop).unwrap();
+    let window = WindowBuilder::new().with_inner_size(LogicalSize{width:1080, height:1080}).build(&event_loop).unwrap();
 
     let mut state = pollster::block_on(State::new(&window));
 
@@ -289,7 +250,6 @@ fn main() {
                 window_id,
             } if window_id == window.id() => {
                 if !state.input(event) {
-                    // UPDATED!
                     match event {
                         WindowEvent::CloseRequested
                         | WindowEvent::KeyboardInput {
@@ -301,13 +261,6 @@ fn main() {
                                 },
                             ..
                         } => *control_flow = ControlFlow::Exit,
-                        WindowEvent::Resized(physical_size) => {
-                            state.resize(*physical_size);
-                        }
-                        WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
-                            // new_inner_size is &&mut so w have to dereference it twice
-                            state.resize(**new_inner_size);
-                        }
                         _ => {}
                     }
                 }
@@ -316,8 +269,6 @@ fn main() {
                 state.update();
                 match state.render() {
                     Ok(_) => {}
-                    // Reconfigure the surface if lost
-                    Err(wgpu::SurfaceError::Lost) => state.resize(state.size),
                     // The system is out of memory, we should probably quit
                     Err(wgpu::SurfaceError::OutOfMemory) => *control_flow = ControlFlow::Exit,
                     // All other errors (Outdated, Timeout) should be resolved by the next frame
@@ -331,4 +282,5 @@ fn main() {
             }
             _ => {}
         }
-    });}
+    });
+}
