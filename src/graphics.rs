@@ -107,15 +107,15 @@ impl State {
 
 
 
-        let (verts, indices, num_indices) = generate_circle(48, 540, (0, 0), size);
+        let (verts, indices, num_indices) = generate_circle(48, (size.width as u16 / 4, size.height as u16 / 4), (size.width as u16/2, size.height as u16/2), size);
 
-        let vertex_buffer = 
+        let vertex_buffer =
             device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: Some("Challenge Vertex Buffer"),
                 contents: bytemuck::cast_slice(&verts),
                 usage: wgpu::BufferUsages::VERTEX,
             });
-        let index_buffer = 
+        let index_buffer =
             device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: Some("Challenge Index Buffer"),
                 contents: bytemuck::cast_slice(&indices),
@@ -139,8 +139,11 @@ impl State {
         false
     }
 
+    // `update` runs every frame
     fn update(&mut self) {
-        //remove todo!()
+        // todo: take data from main.rs
+        // todo: generate multiple circles
+        // todo: move circles to position in `update`
     }
 
     fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
@@ -183,15 +186,26 @@ impl State {
     }
 }
 
+fn pixel_to_coord(pixels: (u16, u16), size: winit::dpi::PhysicalSize<u32>) -> (f32, f32) {
+    let coord_x = (2.0 * pixels.0 as f32 - size.width as f32) / size.width as f32;
+    let coord_y = (-2.0 * pixels.1 as f32 + size.height as f32) / size.height as f32;
 
-fn generate_circle(num_vertices: u16, radius: u16, centre: (u16, u16), size: winit::dpi::PhysicalSize<u32>) -> (Vec<Vertex>, Vec<u16>, u32) {
+    println!("{}, {}", coord_x, coord_y);
+    return (coord_x, coord_y);
+}
+
+
+fn generate_circle(num_vertices: u16, radius: (u16, u16), centre: (u16, u16), size: winit::dpi::PhysicalSize<u32>) -> (Vec<Vertex>, Vec<u16>, u32) {
     let angle = std::f32::consts::PI * 2.0 / num_vertices as f32;
+    let radius = pixel_to_coord((centre.0 +radius.0, centre.1+radius.1), size);
+    let centre = pixel_to_coord(centre, size);
     let verts = (0..num_vertices)
         .map(|i| {
             let theta = angle * i as f32;
             Vertex {
-                position: [(radius as f32)*2.0 / size.width as f32 * theta.cos() + centre.0 as f32 / size.width as f32, -(radius as f32)*2.0 / size.height as f32 * theta.sin() + centre.1 as f32 / size.height as f32, 0.0],
-                color: [(1.0 + theta.cos())/2.0, (1.0 + theta.sin())/2.0, 1.0],
+                position: [radius.0 * theta.cos() + centre.0, radius.1 * theta.sin() - centre.1, 0.0],
+                //color: [(1.0 + theta.cos())/2.0, (1.0 + theta.sin())/2.0, 1.0],
+                color: [0.5, 0.5, 1.0]
             }
         })
         .collect::<Vec<_>>();
@@ -239,7 +253,7 @@ impl Vertex {
 fn main() {
     env_logger::init();
     let event_loop = EventLoop::new();
-    let window = WindowBuilder::new().with_inner_size(LogicalSize{width:1080, height:1080}).build(&event_loop).unwrap();
+    let window = WindowBuilder::new().with_inner_size(LogicalSize{width:720, height:720}).build(&event_loop).unwrap();
 
     let mut state = pollster::block_on(State::new(&window));
 
