@@ -1,122 +1,170 @@
-use std::ops;
+use cgmath::{perspective, EuclideanSpace, Matrix4, Point3, Rad, Vector3};
+use glfw::{Action, Context as _, Key, WindowEvent};
+use luminance_derive::UniformInterface;
+use luminance_front::context::GraphicsContext;
+use luminance_front::pipeline::PipelineState;
+use luminance_front::render_state::RenderState;
+use luminance_front::shader::Uniform;
+use luminance_front::tess::Mode;
+//use luminance_front::Backend;
+use luminance_glfw::GlfwSurface;
+#[allow(deprecated)]
+use luminance_windowing::{WindowDim, WindowOpt};
+//use std::env;
+//use std::fs::File;
+//use std::io::Read as _;
+//use std::path::Path;
+use std::process::exit;
+use std::convert::TryInto;
+//use wavefront_obj::obj;
 
-#[derive(Copy, Clone)]
-pub struct VecTwo {
-    x: f32,
-    y: f32,
-}
-
-impl ops::Mul<f32> for VecTwo {
-    type Output = VecTwo;
+mod lib;
+pub use crate::lib::{Vertex3, Vertex3Position, Vertex3Normal, Vertex3Semantics};
+pub use crate::lib::{Vertex2, Vertex2Position, Vertex2Semantics};
+pub use crate::lib::Obj;
+pub use crate::lib::ui::{VertexIndex, BUTTONS_ARRAY, button_vertex_pos, button_indices};
 
 
-    fn mul(self, float: f32) -> VecTwo {
+const VS_STR: &str = include_str!("vs.glsl");
+const FS_STR: &str = include_str!("fs.glsl");
 
-        return VecTwo {x: self.x*float, y: self.y*float};
-    }
-}
+const FOVY: Rad<f32> = Rad(std::f32::consts::FRAC_PI_2);
+const Z_NEAR: f32 = 0.1;
+const Z_FAR: f32 = 10.;
 
-
-impl ops::Add<VecTwo> for VecTwo {
-    type Output = VecTwo;
-
-    fn add(self, other: VecTwo) -> VecTwo {
-        return VecTwo {x: self.x + other.x, y: self.y + other.y};
-    }
-}
-
-impl ops::Sub<VecTwo> for VecTwo {
-    type Output = VecTwo;
-
-    fn sub(self, other: VecTwo) -> VecTwo {
-        return VecTwo {x: self.x - other.x, y: self.y - other.y};
-    }
-}
-
-impl ops::Div<f32> for VecTwo {
-    type Output = VecTwo;
-
-    fn div(self, float: f32) -> VecTwo {
-        return VecTwo {x: self.x / float, y: self.y / float};
-    }
-}
-
-#[derive(Copy, Clone)]
-pub struct Particle {
-    mass: f32,
-    radius: f32,
-    velocity: VecTwo,
-    acceleration: VecTwo,
-    position: VecTwo,
+#[derive(Debug, UniformInterface)]
+struct ShaderInterface {
+  #[uniform(unbound)]
+  projection: Uniform<[[f32; 4]; 4]>,
+  #[uniform(unbound)]
+  view: Uniform<[[f32; 4]; 4]>,
 }
 
 
-//impl Particle {
-//
-//    fn check_collisions(self, bounding=None) {
-//        if bounding {
-//
-//        } else {
-//
-//        }
-//    }
-//
-//}
 
-pub struct ParticleSystem {
-    size: VecTwo,
-    particles: Vec<Particle>
-}
-
-
-impl ParticleSystem {
-
-    fn update(self, acceleration: VecTwo, dt: f32) -> ParticleSystem {
-
-        let mut new_particles = Vec::<Particle>::new();
-        for particle in self.particles {
-            let mut new_particle = particle;
-
-            new_particle.velocity = particle.velocity + particle.acceleration * dt;
-            new_particle.position = particle.position + particle.velocity * dt;
-
-//            particle.check_collisions(bounding=self.size);
-            new_particles.push(new_particle)
-        }
-
-        return ParticleSystem {size: self.size, particles: new_particles}
-    }
-
-}
-
-
-fn dot(a: VecTwo, b: VecTwo) -> f32 {
-    return a.x * b.x + a.y * b.y;
-}
-
-
-fn norm(a: VecTwo) -> f32 {
-    return a.x + a.y;
-}
-
-
-fn calculate_resultant_velocities(mut a: Particle, mut b: Particle) -> (Particle, Particle) {
-
-    let a_new_vel: VecTwo = a.velocity - (a.position - b.position) * (dot(a.velocity - b.velocity, a.position - b.position) / norm(a.position-b.position).powf(2.0)) * ((2.0*b.mass)/(a.mass + b.mass));
-
-    let a_new_vel: VecTwo = b.velocity - (b.position - a.position) * (dot(b.velocity - a.velocity, b.position - a.position) / norm(b.position-a.position).powf(2.0)) * ((2.0*a.mass)/(a.mass + b.mass));
-
-
-    a.velocity = a_new_vel;
-    b.velocity = a_new_vel;
-
-    return (a, b);
-}
-
+#[allow(deprecated)]
 fn main() {
-    let a: Particle = Particle {mass: 50.0, radius:1.0, velocity: VecTwo {x:50.0, y:50.0}, acceleration: VecTwo {x:0.0, y:0.0}, position: VecTwo {x:100.0, y:100.0}};
-    let b: Particle = Particle {mass: 50.0, radius:1.8, velocity: VecTwo {x:-50.0, y:-50.0}, acceleration: VecTwo {x:0.0, y:0.0}, position: VecTwo {x:170.0, y:170.0}};
-    let mut particle_system = ParticleSystem {size: VecTwo {x: 100.0, y: 100.0}, particles: vec![a, b]};
+  let dim = WindowDim::Windowed {
+    width: 960,
+    height: 540,
+  };
+  let surface = GlfwSurface::new_gl33("Hello, world!", WindowOpt::default().set_dim(dim));
 
-    particle_system = particle_system.update(VecTwo{x:0.0, y:0.0}, 1.0/60.0);
+  match surface {
+    Ok(surface) => {
+      eprintln!("graphics surface created");
+      main_loop(surface);
+    }
+
+    Err(e) => {
+      eprintln!("cannot create graphics surface:\n{}", e);
+      exit(1);
+    }
+  }
+}
+
+
+fn main_loop(surface: GlfwSurface) {
+    //let path = env::args()
+    //.skip(1)
+    //.next()
+    //.expect("first argument must be the path of the .obj file to view");
+    //println!("loading {}", path);
+
+    let vertex_positions: Vec<f32> = button_vertex_pos(&BUTTONS_ARRAY);
+    let mut index: usize = 0;
+    let mut vertices: Vec<Vertex2> = vec![Default::default(); (vertex_positions.len()/2) as usize];
+    loop {
+        vertices[index] = Vertex2::new(Vertex2Position::new([vertex_positions[index], vertex_positions[index+1]]));
+        index += 2;
+
+        if index == vertex_positions.len()/2 {
+        break;
+        }
+    }
+
+    let indices: Vec<VertexIndex> = button_indices(BUTTONS_ARRAY.len().try_into().unwrap());
+
+
+
+    let mut ctxt = surface.context;
+    let events = surface.events_rx;
+    let back_buffer = ctxt.back_buffer().expect("back buffer");
+
+    //let mesh = Obj::load(path).unwrap().to_tess(&mut ctxt).unwrap();
+
+
+    let buttons = ctxt
+        .new_tess()
+        .set_vertices(vertices)
+        .set_indices(indices)
+        .set_mode(Mode::Triangle)
+        .build()
+        .unwrap();
+
+
+    let mut program = ctxt
+    .new_shader_program::<Vertex2Semantics, (), ()>()
+    .from_strings(VS_STR, None, None, FS_STR)
+    .unwrap()
+    .ignore_warnings();
+
+    let [width, height] = back_buffer.size();
+    let projection = perspective(FOVY, width as f32 / height as f32, Z_NEAR, Z_FAR);
+
+    let view = Matrix4::<f32>::look_at(Point3::new(2., 2., 2.), Point3::origin(), Vector3::unit_y());
+
+    'app: loop {
+    // handle events
+    ctxt.window.glfw.poll_events();
+    for (_, event) in glfw::flush_messages(&events) {
+        match event {
+        WindowEvent::Close | WindowEvent::Key(Key::Escape, _, Action::Release, _) => break 'app,
+        _ => (),
+        }
+    }
+
+    // rendering code goes here
+    let color = [0.3, 0.3, 0.3, 1.];
+
+    //let render = ctxt
+    //    .new_pipeline_gate()
+    //    .pipeline(
+    //    &back_buffer,
+    //    &PipelineState::default().set_clear_color(color),
+    //    |_, mut shd_gate| {
+    //        shd_gate.shade(&mut program, |mut iface, uni, mut rdr_gate| {
+    //        iface.set(&uni.projection, projection.into());
+    //        iface.set(&uni.view, view.into());
+
+    //        rdr_gate.render(&RenderState::default(), |mut tess_gate| {
+    //            tess_gate.render(&mesh)
+    //        })
+    //        })
+    //    },
+    //    )
+    //    .assume();
+
+    let render = ctxt
+      .new_pipeline_gate()
+      .pipeline(
+        &back_buffer,
+        &PipelineState::default().set_clear_color(color),
+        |_, mut shd_gate| {
+          shd_gate.shade(&mut program, |_, _, mut rdr_gate| {
+            rdr_gate.render(&RenderState::default(), |mut tess_gate| {
+                tess_gate.render(&buttons)
+            })
+          })
+        },
+      )
+      .assume();
+
+    // swap buffer chains
+    if render.is_ok() {
+        ctxt.window.swap_buffers();
+    } else {
+        break 'app;
+    }
+    }
 }
