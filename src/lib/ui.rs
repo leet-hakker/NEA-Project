@@ -51,17 +51,16 @@ pub fn button_vertex_pos(buttons: &[Button]) -> Vec<f32> {
 pub type VertexIndex = u32;
 
 
-// TODO: More elegant solution to needing u32
-pub fn button_indices(n_buttons: u16) -> Vec<VertexIndex> {
-    let mut indices: Vec<u32> = vec![Default::default(); (6*n_buttons).into()];
+pub fn button_indices(n_buttons: u32) -> Vec<VertexIndex> {
+    let mut indices: Vec<u32> = vec![Default::default(); (6*n_buttons as u16).into()];
     let mut array_index = 0;
     for i in 0..n_buttons {
-        indices[array_index] = (0 + 4*i) as u32;
-        indices[array_index+1] = (1 + 4*i) as u32;
-        indices[array_index+2] = (2 + 4*i) as u32;
-        indices[array_index+3] = (1 + 4*i) as u32;
-        indices[array_index+4] = (2 + 4*i) as u32;
-        indices[array_index+5] = (3 + 4*i) as u32;
+        indices[array_index] = 0 + 4*i;
+        indices[array_index+1] = 1 + 4*i;
+        indices[array_index+2] = 2 + 4*i;
+        indices[array_index+3] = 1 + 4*i;
+        indices[array_index+4] = 2 + 4*i;
+        indices[array_index+5] = 3 + 4*i;
         array_index += 6
     }
 
@@ -76,7 +75,7 @@ const NEW_BUTTON: Button = Button {
 };
 
 const OPEN_BUTTON: Button = Button {
-    position: [-1., 0.73],
+    position: [0.75, 0.73],
     dimensions: [0.25, 0.125],
     colour: [0.5, 0.5, 0.5, 1.],
     action: f,

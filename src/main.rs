@@ -15,7 +15,6 @@ use luminance_windowing::{WindowDim, WindowOpt};
 //use std::io::Read as _;
 //use std::path::Path;
 use std::process::exit;
-use std::convert::TryInto;
 //use wavefront_obj::obj;
 
 mod lib;
@@ -83,7 +82,9 @@ fn main_loop(surface: GlfwSurface) {
         }
     }
 
-    let indices: Vec<VertexIndex> = button_indices(BUTTONS_ARRAY.len().try_into().unwrap());
+    
+
+    let indices: Vec<VertexIndex> = button_indices(BUTTONS_ARRAY.len() as u32);
 
 
 
