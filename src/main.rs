@@ -70,23 +70,26 @@ fn main_loop(surface: GlfwSurface) {
     //.expect("first argument must be the path of the .obj file to view");
     //println!("loading {}", path);
 
+    // TODO: This is gross.
     let vertex_positions: Vec<f32> = button_vertex_pos(&BUTTONS_ARRAY);
     let mut index: usize = 0;
     let mut vertices: Vec<Vertex2> = vec![Default::default(); (vertex_positions.len()/2) as usize];
     loop {
-        vertices[index] = Vertex2::new(Vertex2Position::new([vertex_positions[index], vertex_positions[index+1]]));
+        vertices[index/2] = Vertex2::new(Vertex2Position::new([vertex_positions[index], vertex_positions[index+1]]));
         index += 2;
 
-        if index == vertex_positions.len()/2 {
+        if index == vertex_positions.len() {
         break;
         }
     }
 
-    
-
     let indices: Vec<VertexIndex> = button_indices(BUTTONS_ARRAY.len() as u32);
 
+    let temp_verts = &vertices;
 
+    for vert in temp_verts.into_iter() {
+        println!("{}", vert);
+    }
 
     let mut ctxt = surface.context;
     let events = surface.events_rx;

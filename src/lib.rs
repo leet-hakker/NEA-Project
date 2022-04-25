@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::fs::File;
 use std::io::Read;
+use std::fmt;
 use try_guard::verify;
 use wavefront_obj::obj;
 
@@ -40,6 +41,12 @@ pub struct Vertex2 {
 
 impl Default for Vertex2 {
     fn default() -> Self {Vertex2 {position: Vertex2Position::new([0., 0.])}}
+}
+
+impl fmt::Display for Vertex2 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({}, {})", self.position[0], self.position[1])
+    }
 }
 
 type VertexIndex = u32;
