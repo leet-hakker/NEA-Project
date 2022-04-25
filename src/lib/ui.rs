@@ -75,7 +75,7 @@ const NEW_BUTTON: Button = Button {
 };
 
 const OPEN_BUTTON: Button = Button {
-    position: [0.75, 0.73],
+    position: [-1., 0.73],
     dimensions: [0.25, 0.125],
     colour: [0.5, 0.5, 0.5, 1.],
     action: f,

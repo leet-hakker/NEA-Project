@@ -87,9 +87,6 @@ fn main_loop(surface: GlfwSurface) {
 
     let temp_verts = &vertices;
 
-    for vert in temp_verts.into_iter() {
-        println!("{}", vert);
-    }
 
     let mut ctxt = surface.context;
     let events = surface.events_rx;
