@@ -1,0 +1,8 @@
+/home/leet/Documents/GitHub/NEA-Project/GRAPHICS_LIB/target/debug/build/glfw-sys-6ef695e9c3c7ece2/out/lib/libglfw3.a
+/home/leet/Documents/GitHub/NEA-Project/GRAPHICS_LIB/target/debug/build/glfw-sys-6ef695e9c3c7ece2/out/include/GLFW/glfw3native.h
+/home/leet/Documents/GitHub/NEA-Project/GRAPHICS_LIB/target/debug/build/glfw-sys-6ef695e9c3c7ece2/out/include/GLFW/glfw3.h
+/home/leet/Documents/GitHub/NEA-Project/GRAPHICS_LIB/target/debug/build/glfw-sys-6ef695e9c3c7ece2/out/lib/cmake/glfw3/glfw3Config.cmake
+/home/leet/Documents/GitHub/NEA-Project/GRAPHICS_LIB/target/debug/build/glfw-sys-6ef695e9c3c7ece2/out/lib/cmake/glfw3/glfw3ConfigVersion.cmake
+/home/leet/Documents/GitHub/NEA-Project/GRAPHICS_LIB/target/debug/build/glfw-sys-6ef695e9c3c7ece2/out/lib/cmake/glfw3/glfw3Targets.cmake
+/home/leet/Documents/GitHub/NEA-Project/GRAPHICS_LIB/target/debug/build/glfw-sys-6ef695e9c3c7ece2/out/lib/cmake/glfw3/glfw3Targets-debug.cmake
+/home/leet/Documents/GitHub/NEA-Project/GRAPHICS_LIB/target/debug/build/glfw-sys-6ef695e9c3c7ece2/out/lib/pkgconfig/glfw3.pc

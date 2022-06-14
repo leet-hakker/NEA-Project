@@ -1,3 +1,5 @@
+use glfw::WindowEvent;
+
 use winit::{
     event::*,
     event_loop::{ControlFlow, EventLoop},
