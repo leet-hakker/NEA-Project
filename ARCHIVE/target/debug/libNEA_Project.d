@@ -1,1 +1,0 @@
-/home/leet/Documents/Programming/Rust/NEA-Project/target/debug/libNEA_Project.rlib: /home/leet/Documents/Programming/Rust/NEA-Project/src/lib.rs /home/leet/Documents/Programming/Rust/NEA-Project/src/ui.rs
