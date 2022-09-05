@@ -48,19 +48,49 @@ class Matrix:
             self.data[self.dims[1]*col_index + j] *= num
 
 
-# This represents a matrix like such:
-# | 1  3 |
-# | 2  4 |
-A = Matrix((2, 2), [1, 2, 3, 4])
-# Should print [1,  3]
-print([A[0, 0], A[1, 0]])
-# Changes 1 to 10 and 3 to 30
-A.rowmul(0, 10)
-# Should print [10, 30]
-print([A[0, 0], A[1, 0]])
-# Should print [30, 4]
-print([A[1, 0], A[1, 1]])
-# Changes 30 to 15 and 4 to 2
-A.colmul(1, 0.5)
-# Should print [15, 2]
-print([A[1, 0], A[1, 1]])
+class M(numbers.Number):
+    # M class is a number with two values.
+    # One regular number value, and another Big M value.
+    def __init__(self, num_val, m_val):
+        self.num_val = num_val
+        self.m_val = m_val
+
+    def __repr__(self):
+        if self.m_val < 0:
+            return f"({self.num_val} - {abs(self.m_val)}M)"
+        return f"({self.num_val} + {self.m_val}M)"
+
+    def __gt__(self, other):
+        if isinstance(other, M):
+            return (self.m_val > other.m_val) or (self.m_val == other.m_val and
+                                                  self.num_val > other.num_val)
+
+        return True
+
+    def __lt__(self, other):
+        if isinstance(other, M):
+            return (self.m_val > other.m_val) or (self.m_val == other.m_val and
+                                                  self.num_val > other.num_val)
+        return False
+
+    def __gte__(self, other):
+        if isinstance(other, M):
+            return self.m_val >= other.m_val
+        return True
+
+    def __lte__(self, other):
+        if isinstance(other, M):
+            return self.m_val <= other.m_val
+        return False
+
+    def __eq__(self, other):
+        if isinstance(other, M):
+            return self.m_val == other.m_val and self.num_val == other.num_val
+        return False
+
+
+num1 = M(10, 4)
+num2 = M(0, 4)
+
+# Should print True
+print(num1 > num2)
