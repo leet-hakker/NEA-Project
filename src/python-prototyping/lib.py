@@ -75,12 +75,16 @@ class M(numbers.Number):
 
     def __gte__(self, other):
         if isinstance(other, M):
-            return self.m_val >= other.m_val
+            return (self.m_val >= other.m_val) or (self.m_val == other.m_val and
+                                                  self.num_val >= other.num_val)
+
         return True
 
     def __lte__(self, other):
         if isinstance(other, M):
-            return self.m_val <= other.m_val
+            return (self.m_val <= other.m_val) or (self.m_val == other.m_val and
+                                                  self.num_val <= other.num_val)
+
         return False
 
     def __eq__(self, other):
@@ -89,8 +93,43 @@ class M(numbers.Number):
         return False
 
 
+    def __add__(self, other):
+        if isinstance(other, M):
+            self.m_val += other.m_val
+            self.num_val += other.num_val
+            return self
+        self.num_val += other
+        return self
+
+
+    def __sub__(self, other):
+        if isinstance(other, M):
+            self.m_val -= other.m_val
+            self.num_val -= other.num_val
+            return self
+        self.num_val -= other
+        return self
+    
+
+    def __mul__(self, other):
+        if isinstance(other, M):
+            self.m_val *= other.m_val
+            self.num_val *= other.num_val
+            return self
+        self.num_val *= other
+        return self
+    
+
+    def __div__(self, other):
+        if isinstance(other, M):
+            self.m_val *= other.m_val
+            self.num_val *= other.num_val
+            return self
+        self.num_val *= other
+        return self
+
 num1 = M(10, 4)
 num2 = M(0, 4)
 
 # Should print True
-print(num1 > num2)
+print(num1 + num2)
