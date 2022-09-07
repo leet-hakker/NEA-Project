@@ -29,8 +29,8 @@ long_line_column=72
 
 [files]
 current_page=1
-FILE_NAME_0=561;Python;0;EUTF-8;1;1;0;%2Fhome%2Fleet%2Fprojects%2FNEA-Project%2Fsrc%2Fpython-prototyping%2Flib.py;0;4
-FILE_NAME_1=244;Python;0;EUTF-8;1;1;0;%2Fhome%2Fleet%2Fprojects%2FNEA-Project%2Fsrc%2Fpython-prototyping%2Fsimplex.py;0;4
+FILE_NAME_0=0;Python;0;EUTF-8;1;1;0;%2Fhome%2Fleet%2Fprojects%2FNEA-Project%2Fsrc%2Fpython-prototyping%2Flib.py;0;4
+FILE_NAME_1=732;Python;0;EUTF-8;1;1;0;%2Fhome%2Fleet%2Fprojects%2FNEA-Project%2Fsrc%2Fpython-prototyping%2Fsimplex.py;0;4
 
 [VTE]
 last_dir=/home/leet
