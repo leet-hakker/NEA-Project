@@ -1,0 +1,45 @@
+[editor]
+line_wrapping=false
+line_break_column=72
+auto_continue_multiline=true
+
+[file_prefs]
+final_new_line=true
+ensure_convert_new_lines=false
+strip_trailing_spaces=false
+replace_tabs=false
+
+[indentation]
+indent_width=4
+indent_type=1
+indent_hard_tab_width=8
+detect_indent=false
+detect_indent_width=false
+indent_mode=2
+
+[project]
+name=NEA-Project
+base_path=/home/leet/projects/NEA-Project
+description=
+file_patterns=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=72
+
+[files]
+current_page=1
+FILE_NAME_0=561;Python;0;EUTF-8;1;1;0;%2Fhome%2Fleet%2Fprojects%2FNEA-Project%2Fsrc%2Fpython-prototyping%2Flib.py;0;4
+FILE_NAME_1=244;Python;0;EUTF-8;1;1;0;%2Fhome%2Fleet%2Fprojects%2FNEA-Project%2Fsrc%2Fpython-prototyping%2Fsimplex.py;0;4
+
+[VTE]
+last_dir=/home/leet
+
+[build-menu]
+PythonFT_00_LB=_Compile
+PythonFT_00_CM=python3 -m py_compile "%f"
+PythonFT_00_WD=
+PythonFT_01_LB=Run
+PythonFT_01_CM=python3 "%f"
+PythonFT_01_WD=
+filetypes=Python;

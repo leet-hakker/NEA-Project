@@ -2,51 +2,82 @@ import numbers
 
 
 class Matrix:
-    def __init__(self, dims: (int, int), data: [float]):
-        # If the amount of data provided does
-        # not fit within the dimensions, error
-        if len(data)/dims[0] != dims[1]:
-            raise ValueError(
-                    f"Dimensions {dims} do not match data len ({len(data)})")
-        self.dims = dims
-        self.data = data
+	def __init__(self, dims: (int, int), data: [float]):
+		# If the amount of data provided does
+		# not fit within the dimensions, error
+		if len(data)/dims[0] != dims[1]:
+			raise ValueError(
+					f"Dimensions {dims} do not match data len ({len(data)})")
+		self.dims = dims
+		self.data = data
 
     # Returns the value at index `index`
-    def __getitem__(self, index: (int, int)):
-        item_index = self.dims[1]*index[0] + index[1]
-        return self.data[item_index]
+	def __getitem__(self, index: (int, int)):
+		index_0, index_1 = index
+		if index_0 < 0:
+			index_0 = self.dims[0]+index_0
+		if index_1 < 0:
+			index_1 = self.dims[1]+index_1
+		
+		item_index = index_0 + self.dims[0]*index_1
+		
+		if item_index > self.dims[0]*self.dims[1]:
+			raise IndexError(f"Index [{index[0]}, {index[1]}] out of range")
+		return self.data[item_index]
 
     # Sets the value at `index` to `val`
-    def __setitem__(self, index: (int, int), val: float):
-        # If val is wrong type, error
-        if not isinstance(val, numbers.Number):
-            raise ValueError(
+	def __setitem__(self, index: (int, int), val: float):
+		# If val is wrong type, error
+		if not isinstance(val, numbers.Number):
+			raise ValueError(
                 f"Error assigning new value to matrix cell. New value has type\
  {type(val)}, which is not a number type.")
+ 
+		index_0, index_1 = index
+		if index_0 < 0:
+			index_0 = self.dims[0]+index_0
+		if index_1 < 0:
+			index_1 = self.dims[1]+index_1
+		
+		item_index = index_0 + self.dims[0]*index_1
+		#print(item_index)
+		if item_index > self.dims[0]*self.dims[1]:
+			raise IndexError(f"Index [{index[0]}, {index[1]}] out of range")
+		self.data[item_index] = val
 
-        item_index = self.dims[1]*index[0] + index[1]
-        self.data[item_index] = val
+	# Add `num` to every cell in row `row_index`
+	def rowadd(self, row_index: int, num: float):
+		for i in range(self.dims[0]):
 
-    # Add `num` to every cell in row `row_index`
-    def rowadd(self, row_index: int, num: float):
-        for i in range(self.dims[0]):
-            self.data[self.dims[1]*i + row_index] += num
+			self[i, row_index] += num
+			#print(self[i, row_index])
 
-    # Add `num` to every cell in column `col_index`
-    def coladd(self, col_index: int, num: float):
-        for j in range(self.dims[1]):
-            self.data[self.dims[1]*col_index + j] += num
+	# Add `num` to every cell in column `col_index`
+	def coladd(self, col_index: int, num: float):
+		for j in range(self.dims[1]):
+			print(j)
+			self[col_index, j] += num
 
-    # Multiply every cell in row `row_index` by `num`
-    def rowmul(self, row_index: int, num: float):
-        for i in range(self.dims[0]):
-            self.data[self.dims[1]*i + row_index] *= num
+	# Multiply every cell in row `row_index` by `num`
+	def rowmul(self, row_index: int, num: float):
+		for i in range(self.dims[0]):
+			self[i, row_index] *= num
 
-    # Multiply every cell in column `col_index` by `num`
-    def colmul(self, col_index: int, num: float):
-        for j in range(self.dims[1]):
-            self.data[self.dims[1]*col_index + j] *= num
+	# Multiply every cell in column `col_index` by `num`
+	def colmul(self, col_index: int, num: float):
+		for j in range(self.dims[1]):
+			self[col_index, j] *= num
 
+
+	def __repr__(self):
+		output = ""
+		for j in range(self.dims[1]):
+			for i in range(self.dims[0]):
+				output += str(self[i, j])
+				output += ' '
+			output += "\n"
+
+		return output
 
 class M(numbers.Number):
     # M class is a number with two values.
@@ -127,9 +158,3 @@ class M(numbers.Number):
             return self
         self.num_val *= other
         return self
-
-num1 = M(10, 4)
-num2 = M(0, 4)
-
-# Should print True
-print(num1 + num2)
