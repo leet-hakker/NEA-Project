@@ -1,4 +1,4 @@
-from lib import Matrix, M
+from lib import Matrix, DisplayMatrix, M
 
 def pivot_column(matrix):
 	objective_row = [matrix[i, -1] for i in range(matrix.dims[0]-1)]
@@ -25,30 +25,53 @@ def pivot_row(matrix, column):
 	return index
 
 
-def simplex(matrix):
-	column = pivot_column(matrix)
-	row = pivot_row(matrix, column)
+def isoptimal(matrix, objective_row=-1):
+	return min(matrix.row(objective_row)) >= 0
 
-	matrix.rowmul(row, 1/matrix[column, row])
-	for j in range(matrix.dims[1]):
-		if j == row:
-			continue
-		for i in range(matrix.dims[0]):
-			matrix[i, j] -= matrix[row, j]*matrix[i, column]
 
-	return matrix
+def simplex(matrix, column_names, row_names, show_changes=False):
+	while not isoptimal(matrix):
+		column = pivot_column(matrix)
+		row = pivot_row(matrix, column)
 
-column_names = ["x", "y", "z", "r", "s", "t", "Value"]
-row_names = ["r", "s", "y", "P"]
+		matrix.rowmul(row, 1/matrix[column, row])
 
-		# x	   y    z   r  s    t   Value       Theta
-data = [-0.25, 0, -0.5, 1, 0, -0.75, 8,   # r    -16
-		 2.5,  0,  2,   0, 1, -0.5,  92,  # s	  46
-		 0.75, 1,  0.5, 0, 0,  0.25, 24,  # y     48
-		 3,    0, -6,   0, 0,  5,    480] # P
+		row_names[row] = column_names[column]
+
+		for i in range(matrix.dims[1]):
+			if i == row:
+				continue
+			
+			row_modifier = matrix.row(row)*(-matrix[column, i])
+					
+			matrix.rowadd(i, row_modifier)
+		
+		if show_changes:
+			yield matrix, row_names, (column, row)
+	
+	if not show_changes:
+		yield  matrix, row_names, (-1, -1)
+
+	
+
+column_names = ["x", "y", "r", "s", "Value"]
+row_names = ["r", "s", "P"]
+
+		# x	   y   r   s  Value
+data = [  5,   7,  1,  0,   70,   # r
+		 10,   3,  0,  1,   60,   # s
+		 -3,  -2,  0,  0,    0]   # P
 
 
 mat = Matrix((len(column_names), len(row_names)), data)
 
+for mat, row_names, pivot_cell in simplex(mat, 
+										  column_names, 
+										  row_names, 
+										  show_changes=True):
 
-print(simplex(mat))
+	print(DisplayMatrix(mat, 
+						column_names, 
+						row_names, 
+						changes=pivot_cell)
+		 )
