@@ -206,8 +206,8 @@ class M(Number):
 	# M class is a number with two values.
 	# One regular number value, and another Big M value.
 	def __init__(self, num_val, m_val):
-		self.num_val = num_val
-		self.m_val = m_val
+		self.num_val = Fraction(num_val)
+		self.m_val = Fraction(m_val)
 
 	def __repr__(self):
 		if self.m_val < 0:

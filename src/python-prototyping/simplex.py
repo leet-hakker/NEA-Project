@@ -29,9 +29,9 @@ def isoptimal(matrix, objective_row=-1):
 	return min(matrix.row(objective_row)) >= 0
 
 
-def simplex(matrix, column_names, row_names, show_changes=False):
-	while not isoptimal(matrix):
-		column = pivot_column(matrix)
+def simplex(matrix, column_names, row_names, objective_row=-1, show_changes=False):
+	while not isoptimal(matrix, objective_row=objective_row):
+		column = pivot_column(matrix, objective_row=objective_row)
 		row = pivot_row(matrix, column)
 
 		matrix.rowmul(row, 1/matrix[column, row])
@@ -52,7 +52,24 @@ def simplex(matrix, column_names, row_names, show_changes=False):
 	if not show_changes:
 		yield  matrix, row_names, (-1, -1)
 
+
+def two_stage_simplex(matrix, column_names, row_names, show_changes=False):
+	for matrix, row_names, pivot_cell in simplex(matrix, 
+												 column_names,
+												 row_names,
+												 objective_row=-2,
+												 show_changes=show_changes):
+		yield matrix, row_names, pivot_cell
 	
+	# Remove I row
+	
+	
+	for matrix, row_names, pivot_cell in simplex(matrix,
+												 column_names, 
+												 row_names,
+												 show_changes=show_changes):
+		yield matrix, row_names, pivot_cell
+
 
 column_names = ["x", "y", "r", "s", "Value"]
 row_names = ["r", "s", "P"]
