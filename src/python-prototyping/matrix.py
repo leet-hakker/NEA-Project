@@ -1,4 +1,4 @@
-from numbers import Number
+from numbers import Rational, Number
 from fractions import Fraction
 
 class Matrix:
@@ -48,6 +48,18 @@ class Matrix:
 
 	def row(self, row_index):
 		return MatrixRow([self[i, row_index] for i in range(self.dims[0])])
+
+
+	def removerow(self, row_index):
+		if row_index < 0:
+			row_index = self.dims[1]+row_index
+		
+		start_index = self.dims[0]*row_index
+		for i in range(self.dims[0]):
+			self.data.pop(start_index)
+		self.dims = (self.dims[0], self.dims[1]-1)
+
+		assert len(self.data) == self.dims[0]*self.dims[1]
 
 
 	def column(self, col_index):
@@ -200,84 +212,3 @@ class DisplayMatrix():
 			output += "\n"
 
 		return output
-
-
-class M(Number):
-	# M class is a number with two values.
-	# One regular number value, and another Big M value.
-	def __init__(self, num_val, m_val):
-		self.num_val = Fraction(num_val)
-		self.m_val = Fraction(m_val)
-
-	def __repr__(self):
-		if self.m_val < 0:
-			return f"({self.num_val} - {abs(self.m_val)}M)"
-		return f"({self.num_val} + {self.m_val}M)"
-
-	def __gt__(self, other):
-		if isinstance(other, M):
-			return (self.m_val > other.m_val) or (self.m_val == other.m_val and
-												  self.num_val > other.num_val)
-
-		return True
-
-	def __lt__(self, other):
-		if isinstance(other, M):
-			return (self.m_val > other.m_val) or (self.m_val == other.m_val and
-												  self.num_val > other.num_val)
-		return False
-
-	def __gte__(self, other):
-		if isinstance(other, M):
-			return (self.m_val >= other.m_val) or (self.m_val == other.m_val and
-												  self.num_val >= other.num_val)
-
-		return True
-
-	def __lte__(self, other):
-		if isinstance(other, M):
-			return (self.m_val <= other.m_val) or (self.m_val == other.m_val and
-												  self.num_val <= other.num_val)
-
-		return False
-
-	def __eq__(self, other):
-		if isinstance(other, M):
-			return self.m_val == other.m_val and self.num_val == other.num_val
-		return False
-
-
-	def __add__(self, other):
-		if isinstance(other, M):
-			self.m_val += other.m_val
-			self.num_val += other.num_val
-			return self
-		self.num_val += other
-		return self
-
-
-	def __sub__(self, other):
-		if isinstance(other, M):
-			self.m_val -= other.m_val
-			self.num_val -= other.num_val
-			return self
-		self.num_val -= other
-		return self
-	
-
-	def __mul__(self, other):
-		if isinstance(other, M):
-			self.m_val *= other.m_val
-			self.num_val *= other.num_val
-			return self
-		self.num_val *= other
-		return self
-	
-
-	def __div__(self, other):
-		if isinstance(other, M):
-			self.m_val *= other.m_val
-			self.num_val *= other.num_val
-			return self
-		self.num_val *= other
-		return self
