@@ -86,26 +86,26 @@ def two_stage_simplex(matrix, column_names, row_names, show_changes=False):
 		yield matrix, row_names, pivot_cell
 
 
-column_names = ["x", "y", "z", "r", "s", "t", "Value"]
-row_names = ["r", "s", "y", "P"]
+#column_names = ["x", "y", "z", "r", "s", "t", "Value"]
+#row_names = ["r", "s", "y", "P"]
 
 		#   x     y      z     r    s      t    Value
-data = [ -0.25,   0,  -0.5,    1,   0,  -0.75,    8,   # r
-		   2.5,   0,     2,    0,   1,   -0.5,   92,   # s
-		  0.75,   1,   0.5,    0,   0,   0.25,   24,   # y
-		     3,   0,    -6,    0,   0,      5,  480]   # P
+#data = [ -0.25,   0,  -0.5,    1,   0,  -0.75,    8,   # r
+#		   2.5,   0,     2,    0,   1,   -0.5,   92,   # s
+#		  0.75,   1,   0.5,    0,   0,   0.25,   24,   # y
+#		     3,   0,    -6,    0,   0,      5,  480]   # P
 
 # Two stage matrix
 
-column_names = ["x", "y", "z", "s1", "s2", "s3", "a1", "a2", "Value"]
-row_names = ["s1", "s2", "a1", "P", "I"]
+#column_names = ["x", "y", "z", "s1", "s2", "s3", "a1", "a2", "Value"]
+#row_names = ["s1", "s2", "a1", "P", "I"]
 
 	#   x   y   z   s1   s2   s3  a1  a2  Value
-data = [1,  1,  2,   1,   0,   0,  0,  0,   10,  #  s1
-		2, -3,  1,   0,  -1,   0,  1,  0,    5,  #  a1
-		1,  1,  0,   0,   0,  -1,  0,  1,    8,  #  a2
-		-3, 2, -1,   0,   0,   0,  0,  0,    0,  #  P
-		-3, 2, -1,   0,   1,   1,  0,  0,  -13]  #  I
+#data = [1,  1,  2,   1,   0,   0,  0,  0,   10,  #  s1
+#		2, -3,  1,   0,  -1,   0,  1,  0,    5,  #  a1
+#		1,  1,  0,   0,   0,  -1,  0,  1,    8,  #  a2
+#		-3, 2, -1,   0,   0,   0,  0,  0,    0,  #  P
+#		-3, 2, -1,   0,   1,   1,  0,  0,  -13]  #  I
 
 # Big M matrix
 
@@ -115,11 +115,44 @@ data = [1,  1,  2,   1,   0,   0,  0,  0,   10,  #  s1
 #            1,     0,  0,  0,  0,    -1,       1,        4,    # a1
 #        M(-1, -1), 1, -1,  0,  0,  M(0, 1),    0,   M(0, -4)]  # P
 
+n_columns = int(input("How many columns? "))
+n_rows = int(input("How many rows? "))
+
+column_names = []
+row_names = []
+
+for col in range(n_columns):
+	column_names.append(input(f"Column {col+1}: "))
+
+for row in range(n_rows):
+	row_names.append(input(f"Row {row+1}: "))
+
+data = []
+
+print("Enter data, row by row. Separate entrys with spaces.\nPress enter at the end of each row.")
+
+for j in range(n_rows):
+	_data = input("").split()
+
+	for dat in _data:
+		data.append(int(dat))
 
 mat = Matrix((len(column_names), len(row_names)), data)
 
+
+solver_idx = -1
+solvers = [simplex, two_stage_simplex]
+while solver_idx-1 not in (0, 1):
+	solver_idx = int(input("""Which method do you want to use to solve?
+Simplex Algorithm: 1
+Two Stage Simplex Algorithm: 2
+
+: """))
+
+solver = solvers[solver_idx-1]
+
 start = datetime.now()
-for mat, row_names, pivot_cell in two_stage_simplex(mat, 
+for mat, row_names, pivot_cell in solver(mat, 
 										  column_names, 
 										  row_names, 
 										  show_changes=True):
