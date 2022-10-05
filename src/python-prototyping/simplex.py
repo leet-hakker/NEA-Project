@@ -38,7 +38,16 @@ def pivot_row(matrix, column, two_stage=False):
 
 
 def isoptimal(matrix, objective_row=-1):
-    return min(matrix.row(objective_row)[:-1]) >= 0
+    row = matrix.row(objective_row)[:-1]
+    minimum = row[0]
+
+    for item in row:
+        if item < minimum:
+            minimum = item
+
+    print(minimum)
+
+    return minimum >= 0
 
 
 def simplex(matrix,
@@ -51,6 +60,8 @@ def simplex(matrix,
     while not isoptimal(matrix, objective_row=objective_row):
         column = pivot_column(matrix, objective_row=objective_row)
         row = pivot_row(matrix, column, two_stage=two_stage)
+
+        print(column, row)
 
         matrix.rowmul(row, 1 / matrix[column, row])
 
@@ -102,20 +113,36 @@ def two_stage_simplex(matrix, column_names, row_names, show_changes=False):
 
 # Two stage matrix
 
-# column_names = ["x", "y", "z", "s1", "s2", "s3", "a1", "a2", "Value"]
-# row_names = ["s1", "s2", "a1", "P", "I"]
+#column_names = ["x", "y", "z", "s1", "s2", "s3", "a1", "a2", "Value"]
+#row_names = ["s1", "s2", "a1", "P", "I"]
 
-#   x   y   z   s1   s2   s3  a1  a2  Value
+#       x   y   z   s1   s2   s3  a1  a2  Value
 # data = [1,  1,  2,   1,   0,   0,  0,  0,   10,  #  s1
 # 		2, -3,  1,   0,  -1,   0,  1,  0,    5,  #  a1
 # 		1,  1,  0,   0,   0,  -1,  0,  1,    8,  #  a2
 # 		-3, 2, -1,   0,   0,   0,  0,  0,    0,  #  P
-# 		-3, 2, -1,   0,   1,   1,  0,  0,  -13]  #  I
+#     	-3, 2, -1,   0,   1,   1,  0,  0,  -13]  #  I
 
 # Big M matrix
 
-#      x      y   z  s1  s2     s3       a1      Value
-# data = [    2,     1,  1,  1,  0,     0,       0,       20,    # s1
-#           1,    -2, -1,  0,  1,     0,       0,        7,    # s2
-#            1,     0,  0,  0,  0,    -1,       1,        4,    # a1
-#        M(-1, -1), 1, -1,  0,  0,  M(0, 1),    0,   M(0, -4)]  # P
+from matrix import Matrix, DisplayMatrix
+from fractions import Fraction
+
+column_names = ["x", "y", "z", "s1", "s2", "s3", "a1", "Value"]
+row_names = ["s1", "s2", "a1", "P"]
+
+#           x      y   z  s1  s2     s3       a1      Value
+data = [    2,     1,  1,  1,  0,     0,       0,       20,    # s1
+            1,    -2, -1,  0,  1,     0,       0,        7,    # s2
+            1,     0,  0,  0,  0,    -1,       1,        4,    # a1
+        M(-1, -1), 1, -1,  0,  0,  M(0, 1),    0,   M(0, -4)]  # P
+
+data = [Fraction(i) if not isinstance(i, M) else i for i in data]
+
+mat = Matrix((8, 4), data)
+
+for matrix, row_names, pivot_cell in simplex(mat,
+                                             column_names,
+                                             row_names,
+                                             show_changes=True):
+    print(DisplayMatrix(matrix, column_names, row_names))

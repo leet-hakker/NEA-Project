@@ -1,5 +1,26 @@
 from simplex import simplex, two_stage_simplex
 from matrix import Matrix, DisplayMatrix
+from fractions import Fraction
+
+def process_into_m(data):
+    data = data.replace(" ", "")
+    num_val_str = ""
+    m_val_str = ""
+    data_list = []
+
+
+    chunk = ""
+   
+    if '-' in data:
+        if data.count('-') == 2:
+            data_list = data.split('-')
+            
+    elif '+' in data:
+        pass
+    else:
+        return ValueError("Input for M value invalid.")
+
+
 
 
 n_columns = int(input("How many columns? "))
@@ -25,7 +46,12 @@ for j in range(n_rows):
     _data = input("").split()
 
     for dat in _data:
-        data.append(int(dat))
+        if "M" in dat:
+            data.append(process_into_m(dat))
+            
+
+        else:
+            data.append(Fraction(dat))
 
 mat = Matrix((len(column_names), len(row_names)), data)
 

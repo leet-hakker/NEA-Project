@@ -11,7 +11,7 @@ class Matrix:
             raise ValueError(
                 f"Dimensions {dims} do not match data len ({len(data)})")
         self.dims = dims
-        self.data = [Fraction(num) for num in data]
+        self.data = data
 
     # Returns the value at index `index`
     def __getitem__(self, index: (int, int)):
