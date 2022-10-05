@@ -1,5 +1,5 @@
 from numbers import Number
-from fractions import Fraction
+from M import M
 
 
 class Matrix:
@@ -71,7 +71,10 @@ class Matrix:
             if isinstance(other, Number):
                 self[i, row_index] += other
             elif isinstance(other, list):
-                self[i, row_index] += other[i]
+                if isinstance(other[i], M):
+                    self[i, row_index] = other[i] + self[i, row_index]
+                else:
+                    self[i, row_index] += other[i]
             else:
                 raise ValueError(
                     f"Type of other is not number or list: {type(other)}")
@@ -139,7 +142,10 @@ class MatrixRow(list):
 
     def __mul__(self, other):
         for i in range(len(self)):
-            self[i] *= other
+            if isinstance(other, M):
+                self[i] = other * self[i]
+            else:
+                self[i] *= other
 
         return self
 
@@ -154,7 +160,10 @@ class MatrixCol(list):
 
     def __mul__(self, other):
         for i in range(len(self)):
-            self[i] *= other
+            if isinstance(other, M):
+                self[i] = other * self[i]
+            else:
+                self[i] *= other
 
         return self
 

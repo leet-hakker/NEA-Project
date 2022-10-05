@@ -45,7 +45,8 @@ def isoptimal(matrix, objective_row=-1):
         if item < minimum:
             minimum = item
 
-    print(minimum)
+    if isinstance(minimum, M):
+        return minimum.m_val > 0 or minimum == 0
 
     return minimum >= 0
 
@@ -141,8 +142,11 @@ data = [Fraction(i) if not isinstance(i, M) else i for i in data]
 
 mat = Matrix((8, 4), data)
 
+print(DisplayMatrix(mat, column_names, row_names))
+
 for matrix, row_names, pivot_cell in simplex(mat,
                                              column_names,
                                              row_names,
                                              show_changes=True):
-    print(DisplayMatrix(matrix, column_names, row_names))
+    print(DisplayMatrix(matrix, column_names, row_names, pivot_cell))
+    input("")

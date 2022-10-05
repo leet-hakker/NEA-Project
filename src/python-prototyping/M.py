@@ -16,24 +16,15 @@ class M(Number):
 
     def __gt__(self, other):
         if isinstance(other, M):
-            print(f"""{self} > {other}: {(self.m_val > other.m_val) or (self.m_val == other.m_val and
-                                                  self.num_val > other.num_val)}""")
             return (self.m_val > other.m_val) or (self.m_val == other.m_val and
                                                   self.num_val > other.num_val)
 
-        print(f"{self} > {other}: {self.m_val > 0}")
-        
         return self.m_val > 0
 
     def __lt__(self, other):
         if isinstance(other, M):
-            print(f"""{self} < {other}: {(self.m_val > other.m_val) or (self.m_val == other.m_val and
-                                                  self.num_val > other.num_val)}""")
-            return (self.m_val > other.m_val) or (self.m_val == other.m_val and
-                                                  self.num_val > other.num_val)
-
-
-        print(f"{self} < {other}: {self.m_val < 0}")
+            return (self.m_val < other.m_val) or (self.m_val == other.m_val and
+                                                  self.num_val < other.num_val)
 
         return self.m_val < 0
 
@@ -90,3 +81,5 @@ class M(Number):
         self.m_val *= other
         return self
 
+    def __neg__(self):
+        return M(-self.num_val, -self.m_val)
