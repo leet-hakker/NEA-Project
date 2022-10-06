@@ -1,9 +1,8 @@
 from numbers import Number
 from M import M
-
+from fractions import Fraction
 
 class Matrix:
-
     def __init__(self, dims: (int, int), data: [float]):
         # If the amount of data provided does
         # not fit within the dimensions, error
@@ -11,7 +10,7 @@ class Matrix:
             raise ValueError(
                 f"Dimensions {dims} do not match data len ({len(data)})")
         self.dims = dims
-        self.data = data
+        self.data = [Fraction(item) if not isinstance(item, M) else item for item in data]
 
     # Returns the value at index `index`
     def __getitem__(self, index: (int, int)):
@@ -96,7 +95,7 @@ class Matrix:
         for i in range(self.dims[0]):
 
             if isinstance(other, Number):
-                self[i, row_index] *= other
+                self[i, row_index] = other * self[i, row_index]
             elif isinstance(other, list):
                 self[i, row_index] *= other[i]
             else:
