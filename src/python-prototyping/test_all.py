@@ -9,6 +9,8 @@ def test_one(start_matrix, end_matrix, solver):
     columns = [i for i in range(start_matrix.dims[0])]
     rows = [i for i in range(start_matrix.dims[1])]
 
+    print(start_matrix)
+
     for calculated_end_matrix, _, _ in solver(start_matrix, columns, rows):
         for calculated_mat_item, end_mat_item in zip(calculated_end_matrix.data, 
                                                     end_matrix.data):
@@ -19,6 +21,8 @@ def test_one(start_matrix, end_matrix, solver):
                 print(calculated_end_matrix)
                 print(end_matrix)
                 raise
+
+        print(calculated_end_matrix)
 
     print("Success!")
 
