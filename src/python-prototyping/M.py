@@ -10,9 +10,12 @@ class M(Number):
         self.m_val = Fraction(m_val)
 
     def __repr__(self):
-        if self.m_val < 0:
-            return f"({self.num_val} - {abs(self.m_val)}M)"
-        return f"({self.num_val} + {self.m_val}M)"
+        if self.m_val != 0:
+            if self.m_val < 0:
+                return f"({self.num_val} - {abs(self.m_val)}M)"
+            return f"({self.num_val} + {self.m_val}M)"
+        else:
+            return f"{self.num_val}"
 
     def __gt__(self, other):
         if isinstance(other, M):
@@ -45,7 +48,8 @@ class M(Number):
     def __eq__(self, other):
         if isinstance(other, M):
             return self.m_val == other.m_val and self.num_val == other.num_val
-        return False
+        
+        return self.m_val == 0 and self.num_val == other
 
     def __add__(self, other):
         new = M(0, 0)
