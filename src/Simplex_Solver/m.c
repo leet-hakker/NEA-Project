@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-#include "fraction.c"
+#include "fraction.h"
 
 typedef struct {
  Fraction num_val;
@@ -17,12 +17,3 @@ M M_new(Fraction num_val, Fraction m_val) {
   return new_m;
 }
 
-int main() {
-  M my_m = M_new(Fraction_new(0, 1), Fraction_new(1, 2));
-
-  printf("%s", Fraction_str(my_m.num_val));
-  printf("\n");
-  printf("%f", 1.0f/2.0f);
-
-  return 0;
-}
