@@ -1,17 +1,17 @@
 from M import M
+from matrix import Matrix
 from math import inf
 
 
-def pivot_column(matrix, objective_row=-1):
+def pivot_column(matrix: Matrix, objective_row: int = -1) -> int:
     objective_row = [
         matrix[i, objective_row] for i in range(matrix.dims[0] - 1)
     ]
 
-
     return objective_row.index(min(objective_row))
 
 
-def pivot_row(matrix, column, two_stage=False):
+def pivot_row(matrix: Matrix, column: int, two_stage: bool = False) -> int:
     thetas = []
     indices = []
 
@@ -38,7 +38,7 @@ def pivot_row(matrix, column, two_stage=False):
     return index
 
 
-def isoptimal(matrix, objective_row=-1):
+def isoptimal(matrix: Matrix, objective_row: int = -1) -> bool:
     row = matrix.row(objective_row)[:-1]
     minimum = row[0]
 
@@ -46,24 +46,22 @@ def isoptimal(matrix, objective_row=-1):
         if item < minimum:
             minimum = item
 
-
     if isinstance(minimum, M):
-        return minimum.m_val > 0 or minimum == M(0,0)
+        return minimum.m_val > 0 or minimum == M(0, 0)
 
     return minimum >= 0
 
 
-def simplex(matrix,
-            column_names,
-            row_names,
-            objective_row=-1,
-            two_stage=False,
-            show_changes=False):
+def simplex(matrix: Matrix,
+            column_names: [str],
+            row_names: [str],
+            objective_row: int = -1,
+            two_stage: bool = False,
+            show_changes: bool = False) -> [Matrix, [str], [int, int]]:
 
     while not isoptimal(matrix, objective_row=objective_row):
         column = pivot_column(matrix, objective_row=objective_row)
         row = pivot_row(matrix, column, two_stage=two_stage)
-
 
         matrix.rowmul(row, 1 / matrix[column, row])
 
@@ -73,35 +71,30 @@ def simplex(matrix,
             if i == row:
                 continue
 
-
             row_modifier = matrix.row(row) * (-matrix[column, i])
-
 
             matrix.rowadd(i, row_modifier)
 
         if show_changes:
-            yield matrix, row_names, (column, row)
+            return matrix, row_names, (column, row)
 
     if not show_changes:
-        yield matrix, row_names, (-1, -1)
+        return matrix, row_names, (-1, -1)
 
 
-def two_stage_simplex(matrix, column_names, row_names, show_changes=False):
-    for matrix, row_names, pivot_cell in simplex(matrix,
-                                                 column_names,
-                                                 row_names,
-                                                 objective_row=-1,
-                                                 two_stage=True,
-                                                 show_changes=show_changes):
+def two_stage_simplex(matrix: Matrix, column_names: [str], row_names: [str], show_changes: bool = False) -> [Matrix, [str], [int, int]]:
+    while not isoptimal(matrix, objective_row=-1):
+        matrix, row_names, pivot_cell = simplex(matrix,
+                                                column_names,
+                                                row_names,
+                                                objective_row=-1,
+                                                two_stage=True,
+                                                show_changes=show_changes)
         if show_changes:
-            yield matrix, row_names, pivot_cell
+            return matrix, row_names, pivot_cell
 
     # Remove I row
     matrix.removerow(-1)
     row_names.pop(-1)
 
-    for matrix, row_names, pivot_cell in simplex(matrix,
-                                                 column_names,
-                                                 row_names,
-                                                 show_changes=show_changes):
-        yield matrix, row_names, pivot_cell
+    return matrix, row_names, pivot_cell

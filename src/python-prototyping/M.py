@@ -48,7 +48,7 @@ class M(Number):
     def __eq__(self, other):
         if isinstance(other, M):
             return self.m_val == other.m_val and self.num_val == other.num_val
-        
+
         return self.m_val == 0 and self.num_val == other
 
     def __add__(self, other):
@@ -60,7 +60,6 @@ class M(Number):
         new.num_val = self.num_val + other
         new.m_val = self.m_val
         return new
-
 
     def __sub__(self, other):
         new = M(0, 0)
@@ -79,7 +78,7 @@ class M(Number):
             new.num_val = self.num_val * other.num_val
             return new
         new.num_val = self.num_val * other
-        new.m_val = self.m_val *other
+        new.m_val = self.m_val * other
         return new
 
     def __div__(self, other):

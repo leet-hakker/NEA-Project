@@ -2,6 +2,7 @@ from numbers import Number
 from M import M
 from fractions import Fraction
 
+
 class Matrix:
     def __init__(self, dims: (int, int), data: [float]):
         # If the amount of data provided does
@@ -10,7 +11,8 @@ class Matrix:
             raise ValueError(
                 f"Dimensions {dims} do not match data len ({len(data)})")
         self.dims = dims
-        self.data = [Fraction(item) if not isinstance(item, M) else item for item in data]
+        self.data = [Fraction(item) if not isinstance(
+            item, M) else item for item in data]
 
     # Returns the value at index `index`
     def __getitem__(self, index: (int, int)):
