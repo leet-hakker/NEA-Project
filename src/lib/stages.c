@@ -7,6 +7,9 @@
 #include <stdint.h>
 #include <string.h>
 
+// Checks that every row and column
+// title is filled in, return true
+// if it is.
 bool check_stage_0(Tableux *tab) {
     char *empty = calloc(1, 1);
     for (int i=0; i < tab->columns; i++) {
@@ -28,6 +31,8 @@ bool check_stage_0(Tableux *tab) {
     return true;
 }
 
+// Returns true if every cell in the grid has been
+// filled with data.
 bool check_stage_1(Tableux *tab) {
     char *empty = calloc(1, 1);
     for (int i=1; i < tab->rows; i++) {

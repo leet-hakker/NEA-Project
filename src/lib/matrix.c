@@ -10,6 +10,8 @@ typedef struct Matrix {
     BigM **values;
 } Matrix;
 
+// Frees the data contained in the matrix,
+// and then frees the matrix
 void free_matrix(Matrix *mat) {
     for (int i=0; i < mat->rows; i++) {
         free(mat->values[i]);
@@ -19,6 +21,8 @@ void free_matrix(Matrix *mat) {
     free(mat);
 }
 
+// Returns an empty matrix with the dimensions
+// given
 Matrix* new_matrix(int rows, int columns) {
     Matrix* mat = malloc(sizeof(Matrix));
     if (mat == NULL) {
@@ -45,6 +49,8 @@ Matrix* new_matrix(int rows, int columns) {
     return mat;
 }
 
+// Returns a new matrix of dimensions rows x columns, with the data
+// provided inserted in.
 Matrix* new_matrix_with_data(int rows, int columns, BigM** data) {
     Matrix* mat = new_matrix(rows, columns);
     if (mat == NULL) {
@@ -56,10 +62,13 @@ Matrix* new_matrix_with_data(int rows, int columns, BigM** data) {
     return mat;
 }
 
+// Returns the value contained in the matrix at the
+// given point
 BigM get(const Matrix* mat, int row, int column) {
     return mat->values[row][column];
 }
 
+// Sets the cell at row, column to the value given.
 bool set(Matrix* mat, int row, int column, BigM value) {
     if (row > mat->rows-1) { 
         return false;
@@ -68,16 +77,4 @@ bool set(Matrix* mat, int row, int column, BigM value) {
     }
     mat->values[row][column] = value;
     return true;
-}
-
-void print_mat(Matrix *mat) {
-    char *str = malloc(30 * sizeof(char));
-    for (int i=0; i < mat->rows; i++) {
-        for (int j=0; j < mat->columns; j++) {
-            BigM_str(get(mat, i, j), str);
-            printf("%s ", str);
-        }
-        printf("\n");
-    }
-    free(str);
 }

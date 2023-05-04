@@ -6,6 +6,7 @@
 #include "bigm.h"
 #include "matrix.h"
 
+extern const uint16_t ROWCOLBGCOLOUR;
 extern const uint8_t MAXROWS;
 extern const uint8_t MAXCOLS;
 extern const uint8_t MINROWS;

@@ -14,7 +14,6 @@ typedef struct VisualCell {
   int x_dim;
   int y_dim;
   bool selected;
-  bool editing;
   bool editable;
   uint16_t bgcol;
   char *contents;

@@ -10,7 +10,6 @@ project(SimplexSolver)
 # set(HOST_C_COMPILER sh-elf-gcc)
 # set(HOST_C_FLAGS "-Wall -Werror -O3 -m4-nofpu -mb -ffreestanding -nostdlib -Wa,--dsp")
 
-
 add_subdirectory(src)
 # enable_testing()
 # add_subdirectory(tests)
