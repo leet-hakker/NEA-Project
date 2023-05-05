@@ -64,16 +64,12 @@ void process_common_keys(key_event_t key, uint8_t *cursor_x, uint8_t *cursor_y, 
             if (length > 0) 
                 tab->grid[*cursor_y][*cursor_x]->contents[length-1] = '\0';
         // If the given key is a number
-        } else if (keycode_digit(key.key) > 0) {
+        } else if (keycode_digit(key.key) >= 0) {
             if (strlen(tab->grid[*cursor_y][*cursor_x]->contents) < 20) {
                 char digit[2];
                 sprintf(digit, "%d", keycode_digit(key.key));
                 strncat(tab->grid[*cursor_y][*cursor_x]->contents, digit, 1);
             }
-        } else if (key.key == KEY_0) {
-            // Work-around because keycode_digit() for some reason does not include 0.
-            if (strlen(tab->grid[*cursor_y][*cursor_x]->contents) < 20)
-                strncat(tab->grid[*cursor_y][*cursor_x]->contents, "0", 1);
         } else if (key.key == KEY_MINUS) {
             if (strlen(tab->grid[*cursor_y][*cursor_x]->contents) < 20)
                 strncat(tab->grid[*cursor_y][*cursor_x]->contents, "-", 1);
@@ -145,6 +141,7 @@ bool process_key_construction_stage(key_event_t key, VisualCell *row_number_cell
             break;
 
         default:
+            return false;
             break;
     }
 }
@@ -319,8 +316,34 @@ bool process_key_tableux_stage(key_event_t key, uint8_t *cursor_x, uint8_t *curs
         // nothing else to do.
         if (process_cursor_movement(key, cursor_x, cursor_y, tab)) {
             return false;
-        } else {
+        } else if (key.key == KEY_DEL) {
             process_common_keys(key, cursor_x, cursor_y, tab);
+        } else {
+            char *ch = malloc(2);
+            if (keycode_digit(key.key) >= 0) {
+                sprintf(ch, "%d", keycode_digit(key.key));
+            } else if (key.alpha) {
+                if (key.key == KEY_7) {
+                    strcat(ch, "M");
+                } else {
+                    strcat(ch, "");
+                }
+            } else if (key.key == KEY_MINUS) {
+                strcat(ch, "-");
+            } else if (key.key == KEY_PLUS) {
+                strcat(ch, "+");
+            } else if (key.key == KEY_FRAC || key.key == KEY_DIV) {
+                strcat(ch, "/");
+            } else {
+                strcpy(ch, "");
+            }
+
+            if (strlen(ch) > 0) {
+                if (validate_input(tab->grid[*cursor_y][*cursor_x]->contents, ch[0])) {
+                    process_common_keys(key, cursor_x, cursor_y, tab);
+                }
+            }
+            free(ch);
         }
     }
 

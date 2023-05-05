@@ -9,6 +9,7 @@
 #include "../include/tableux.h"
 #include "../include/input.h"
 #include "../include/stages.h"
+#include "../include/input_validation.h"
 
 const color_t CHANGED_COLOUR = 0xAAF6;
 
@@ -20,7 +21,9 @@ bool show_options_menu() {
 	bool exit = false;
 
 	while (!exit) {
-		dtext(10, 110, 0x0000, "Show steps to solution?");
+		dtext(10, 10, 0x0000, "Show steps to solution?");
+		dtext(10, 30, 0x0000, "Press EXE to toggle selection");
+		dtext(10, 50, 0x0000, "Press F6 to confirm selection.");
 		draw_cell(checkbox);
 		dupdate();
 		key_event_t key = getkey();
@@ -54,6 +57,7 @@ Tableux *tableux_construction_stage() {
 	while (!exit) {
 		dtext(10, 85, 0x0000, "Rows:");
 		dtext(200, 85, 0x0000, "Cols:");
+		dtext(40, 120, 0x0000, "Use the arrow keys.");
 		draw_cell(row_number_cell);
 		draw_cell(column_number_cell);
 		dupdate();
@@ -91,8 +95,11 @@ int tableux_input_stage(Tableux *tab) {
 	uint8_t cursor_y = 0;
 	uint8_t stage = 0;
 
-	while (true) {
+	VisualCell *next_box = new_viscell(340, 200, 50, 20, true, " NEXT");
+
+	while (stage < 2) {
 		display_tableux(tab);
+		draw_cell(next_box);
 
 		dupdate();
 
@@ -115,13 +122,12 @@ int tableux_input_stage(Tableux *tab) {
 				// tableux. Again, when the user presses F6 and the grid is
 				// filled in, the function here will return true and stage
 				// will be set to 2.
+				
 				if (process_key_tableux_stage(key, &cursor_x, &cursor_y, tab)) {
 					stage = 2;
 				}
 				break;
 
-			// Once `stage` reaches 2, the tableux is ready.
-			// Move on to the next part of the program.
 			default:
 				return 0;
 		}
@@ -130,6 +136,8 @@ int tableux_input_stage(Tableux *tab) {
 		// shown correctly to the user.
 		update_cursor(cursor_x, cursor_y, tab);
 	}
+
+	free_viscell(next_box);
 
 	return 0;
 }

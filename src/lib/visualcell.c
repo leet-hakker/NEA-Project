@@ -1,11 +1,8 @@
+#include <gint/display.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
-#ifndef FXCG50
-#define FXCG50
-#endif
-#include <gint/display.h>
 
 const int BORDERPX = 1;
 const int CELL_W_TO_H_RATIO = 2;
@@ -49,7 +46,7 @@ void free_viscell(VisualCell *cell) {
 void draw_cell_contents(VisualCell *cell) {
     const font_t *font = dfont_default();
 
-    dtext(cell->x+BORDERPX+1, cell->y + cell->y_dim-font->line_height-1, 0x0000, cell->contents);
+    dtext(cell->x+BORDERPX+1, cell->y + cell->y_dim - font->line_height - 3, 0x0000, cell->contents);
 }
 
 // Draws the given cell
