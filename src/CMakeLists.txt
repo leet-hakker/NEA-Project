@@ -1,7 +1,7 @@
 add_subdirectory(lib)
 
 add_executable(simplexsolver main.c)
-target_link_libraries(simplexsolver fraction bigm matrix simplex visualcell tableux input stages input_validation)
+target_link_libraries(simplexsolver fraction bigm matrix simplex visualcell tableux input stages input_validation memcheck)
 
 include(GenerateG1A)
 include(GenerateG3A)

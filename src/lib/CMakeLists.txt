@@ -14,6 +14,7 @@ add_library(input input.c)
 target_link_libraries(input tableux input_validation)
 add_library(stages stages.c)
 target_link_libraries(stages tableux)
+add_library(memcheck memcheck.c)
 
 target_include_directories(fraction   PUBLIC ../../include)
 target_include_directories(bigm       PUBLIC ../../include)

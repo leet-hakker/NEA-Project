@@ -15,6 +15,6 @@ void* _memcheck_realloc(void* ptr, size_t size, const char* file, int line, cons
 void _memcheck_free(void* ptr);
 
 // public
-void apply_memcheck();
+void memcheck();
 
 #endif

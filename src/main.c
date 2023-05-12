@@ -304,8 +304,9 @@ int main() {
 	// Free the Tableux, ready to exit.
 	free_tableux(tab);
 
-	while (true) {
-		getkey();
+	key_event_t key;
+	while (key.key != KEY_EXIT) {
+		key = getkey();
 	}
 
 	return 0;

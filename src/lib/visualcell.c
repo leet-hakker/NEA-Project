@@ -1,3 +1,6 @@
+#ifndef FXCG50
+#define FXCG50
+#endif
 #include <gint/display.h>
 #include <stdlib.h>
 #include <stdbool.h>
